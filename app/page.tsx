@@ -21,22 +21,12 @@ export default function Home() {
         <RegistrationForm />
       </section>
 
-      {/* Problems Section */}
+     
       <ProblemsSection />
-
-      {/* Features/Offer Section */}
       <FeaturesSection />
-
-      {/* Registration Steps */}
       <RegistrationSteps />
-
-      {/* Pricing Section */}
       <PricingSection />
-
-      {/* Testimonials Section */}
       <TestimonialsSection />
-
-      {/* Footer */}
       <footer className="bg-gray-900 text-white py-8 px-4" dir="rtl">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-lg font-semibold mb-2">BackLab - منصة تعليم الإعلامية</p>
