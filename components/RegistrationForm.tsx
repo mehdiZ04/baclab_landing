@@ -245,7 +245,7 @@ export default function RegistrationForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* State */}
+            
             <div className="space-y-2">
               <Label htmlFor="state" className="text-right block">
                 الولاية *
