@@ -14,13 +14,50 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const tunisianStates = [
-  "أريانة", "باجة", "بن عروس", "بنزرت", "تونس", "جندوبة", "زغوان", "سليانة",
-  "سوسة", "صفاقس", "قابس", "قبلي", "قفصة", "قليبية", "الكاف", "القيروان",
-  "مدنين", "المنستير", "المهدية", "منوبة", "نابل", "سيدي بوزيد", "تطاوين", "توزر"
+  "أريانة",
+  "باجة",
+  "بن عروس",
+  "بنزرت",
+  "تونس",
+  "جندوبة",
+  "زغوان",
+  "سليانة",
+  "سوسة",
+  "صفاقس",
+  "قابس",
+  "قبلي",
+  "قفصة",
+  "قليبية",
+  "الكاف",
+  "القيروان",
+  "مدنين",
+  "المنستير",
+  "المهدية",
+  "منوبة",
+  "نابل",
+  "سيدي بوزيد",
+  "تطاوين",
+  "توزر",
 ];
 
+type FormData = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  parentPhone: string;
+  state: string;
+  section: string;
+  address: string;
+  paymentMethod: string;
+};
+
+type SubmitMessage = {
+  type: "success" | "error";
+  text: string;
+} | null;
+
 export default function RegistrationForm() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
     phone: "",
@@ -28,12 +65,12 @@ export default function RegistrationForm() {
     state: "",
     section: "",
     address: "",
-    paymentMethod: ""
+    paymentMethod: "",
   });
-  
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [submitMessage, setSubmitMessage] = useState<SubmitMessage>(null);
 
   const validatePhone = (phone: string): boolean => {
     const phoneRegex = /^[0-9]{8}$/;
@@ -41,85 +78,93 @@ export default function RegistrationForm() {
   };
 
   const validateForm = (): boolean => {
-    const newErrors: {[key: string]: string} = {};
+    const newErrors: { [key: string]: string } = {};
 
-    // Validate first name
     if (!formData.firstName.trim()) {
       newErrors.firstName = "الإسم مطلوب";
     } else if (formData.firstName.trim().length < 2) {
       newErrors.firstName = "الإسم يجب أن يحتوي على حرفين على الأقل";
     }
 
-    // Validate last name
     if (!formData.lastName.trim()) {
       newErrors.lastName = "اللقب مطلوب";
     } else if (formData.lastName.trim().length < 2) {
       newErrors.lastName = "اللقب يجب أن يحتوي على حرفين على الأقل";
     }
 
-    // Validate phone
     if (!formData.phone) {
       newErrors.phone = "رقم الهاتف مطلوب";
     } else if (!validatePhone(formData.phone)) {
       newErrors.phone = "رقم الهاتف يجب أن يحتوي على 8 أرقام";
     }
 
-    // Validate parent phone
     if (!formData.parentPhone) {
       newErrors.parentPhone = "رقم هاتف الولي مطلوب";
     } else if (!validatePhone(formData.parentPhone)) {
       newErrors.parentPhone = "رقم هاتف الولي يجب أن يحتوي على 8 أرقام";
     }
 
-    // Validate state
     if (!formData.state) {
-      newErrors.state = "يجب إختيار الولاية";
+      newErrors.state = "يجب اختيار الولاية";
     }
 
-    // Validate section
     if (!formData.section) {
-      newErrors.section = "يجب إختيار الشعبة";
+      newErrors.section = "يجب اختيار الشعبة";
     }
 
-    // Validate address
     if (!formData.address.trim()) {
       newErrors.address = "العنوان مطلوب";
     } else if (formData.address.trim().length < 10) {
       newErrors.address = "العنوان قصير جدا";
     }
 
-    // Validate payment method
     if (!formData.paymentMethod) {
-      newErrors.paymentMethod = "يجب إختيار طريقة الدفع";
+      newErrors.paymentMethod = "يجب اختيار طريقة الدفع";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleChange =
+    (field: keyof FormData) =>
+    (value: string | React.ChangeEvent<HTMLInputElement>) => {
+      const newValue =
+        typeof value === "string" ? value : value.target.value || "";
+      setFormData((prev) => ({ ...prev, [field]: newValue }));
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: "" }));
+      }
+    };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitMessage(null);
 
-    // Validate before submitting
     if (!validateForm()) {
-      setSubmitMessage({ type: 'error', text: 'يرجى تصحيح الأخطاء في النموذج' });
+      setSubmitMessage({
+        type: "error",
+        text: "يرجى تصحيح الأخطاء في الاستمارة",
+      });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
+      const response = await fetch("/api/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        setSubmitMessage({ type: 'success', text: 'تم التسجيل بنجاح! سنتصل بك قريبا.' });
+        setSubmitMessage({
+          type: "success",
+          text: "تم التسجيل بنجاح! سنتصل بك قريبا لتأكيد اشتراكك.",
+        });
         setFormData({
           firstName: "",
           lastName: "",
@@ -128,255 +173,282 @@ export default function RegistrationForm() {
           state: "",
           section: "",
           address: "",
-          paymentMethod: ""
+          paymentMethod: "",
         });
         setErrors({});
       } else {
-        setSubmitMessage({ type: 'error', text: 'حدث خطأ. يرجى المحاولة مرة أخرى.' });
+        setSubmitMessage({
+          type: "error",
+          text: "حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.",
+        });
       }
-    } catch (error) {
-      setSubmitMessage({ type: 'error', text: 'حدث خطأ. يرجى المحاولة مرة أخرى.' });
+    } catch {
+      setSubmitMessage({
+        type: "error",
+        text: "حدث خطأ في الإتصال. حاول من جديد بعد لحظات.",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-xl" dir="rtl">
-      <CardHeader className="bg-white border-b-4 border-purple-500 rounded-t-lg">
-        <CardTitle className="text-2xl text-center font-bold text-gray-900">
-          سجل الآن واحجز مقعدك
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="mt-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-right block">
-                الإسم *
-              </Label>
-              <Input
-                id="firstName"
-                type="text"
-                required
-                className={`text-right ${errors.firstName ? 'border-red-500' : ''}`}
-                value={formData.firstName}
-                onChange={(e) => {
-                  setFormData({ ...formData, firstName: e.target.value });
-                  if (errors.firstName) setErrors({ ...errors, firstName: '' });
-                }}
-                placeholder="أدخل إسمك"
-              />
-              {errors.firstName && (
-                <p className="text-red-500 text-sm text-right">{errors.firstName}</p>
-              )}
-            </div>
-
-            {/* Last Name */}
-            <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-right block">
-                اللقب *
-              </Label>
-              <Input
-                id="lastName"
-                type="text"
-                required
-                className={`text-right ${errors.lastName ? 'border-red-500' : ''}`}
-                value={formData.lastName}
-                onChange={(e) => {
-                  setFormData({ ...formData, lastName: e.target.value });
-                  if (errors.lastName) setErrors({ ...errors, lastName: '' });
-                }}
-                placeholder="أدخل لقبك"
-              />
-              {errors.lastName && (
-                <p className="text-red-500 text-sm text-right">{errors.lastName}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Phone */}
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-right block">
-                رقم الهاتف *
-              </Label>
-              <Input
-                id="phone"
-                type="tel"
-                required
-                className={`text-right ${errors.phone ? 'border-red-500' : ''}`}
-                value={formData.phone}
-                onChange={(e) => {
-                  setFormData({ ...formData, phone: e.target.value });
-                  if (errors.phone) setErrors({ ...errors, phone: '' });
-                }}
-                placeholder="مثال: 12345678"
-                maxLength={8}
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-sm text-right">{errors.phone}</p>
-              )}
-            </div>
-
-            {/* Parent Phone */}
-            <div className="space-y-2">
-              <Label htmlFor="parentPhone" className="text-right block">
-                رقم هاتف الولي *
-              </Label>
-              <Input
-                id="parentPhone"
-                type="tel"
-                required
-                className={`text-right ${errors.parentPhone ? 'border-red-500' : ''}`}
-                value={formData.parentPhone}
-                onChange={(e) => {
-                  setFormData({ ...formData, parentPhone: e.target.value });
-                  if (errors.parentPhone) setErrors({ ...errors, parentPhone: '' });
-                }}
-                placeholder="مثال: 12345678"
-                maxLength={8}
-              />
-              {errors.parentPhone && (
-                <p className="text-red-500 text-sm text-right">{errors.parentPhone}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            <div className="space-y-2">
-              <Label htmlFor="state" className="text-right block">
-                الولاية *
-              </Label>
-              <Select
-                value={formData.state}
-                onValueChange={(value) => {
-                  setFormData({ ...formData, state: value });
-                  if (errors.state) setErrors({ ...errors, state: '' });
-                }}
-              >
-                <SelectTrigger className={`text-right ${errors.state ? 'border-red-500' : ''}`} dir="rtl">
-                  <SelectValue placeholder="إختر الولاية" />
-                </SelectTrigger>
-                <SelectContent dir="rtl">
-                  {tunisianStates.map((state) => (
-                    <SelectItem key={state} value={state} className="text-right">
-                      {state}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.state && (
-                <p className="text-red-500 text-sm text-right">{errors.state}</p>
-              )}
-            </div>
-
-            {/* Section */}
-            <div className="space-y-2">
-              <Label htmlFor="section" className="text-right block">
-                الشعبة *
-              </Label>
-              <Select
-                value={formData.section}
-                onValueChange={(value) => {
-                  setFormData({ ...formData, section: value });
-                  if (errors.section) setErrors({ ...errors, section: '' });
-                }}
-              >
-                <SelectTrigger className={`text-right ${errors.section ? 'border-red-500' : ''}`} dir="rtl">
-                  <SelectValue placeholder="إختر الشعبة" />
-                </SelectTrigger>
-                <SelectContent dir="rtl">
-                  <SelectItem value="رياضيات" className="text-right">
-                    رياضيات
-                  </SelectItem>
-                  <SelectItem value="علوم تجريبية" className="text-right">
-                    علوم تجريبية
-                  </SelectItem>
-                  <SelectItem value="تقنية" className="text-right">
-                    تقنية
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.section && (
-                <p className="text-red-500 text-sm text-right">{errors.section}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Address */}
-          <div className="space-y-2">
-            <Label htmlFor="address" className="text-right block">
-              العنوان الكامل *
-            </Label>
-            <Input
-              id="address"
-              type="text"
-              required
-              className={`text-right ${errors.address ? 'border-red-500' : ''}`}
-              value={formData.address}
-              onChange={(e) => {
-                setFormData({ ...formData, address: e.target.value });
-                if (errors.address) setErrors({ ...errors, address: '' });
-              }}
-              placeholder="أدخل عنوانك الكامل"
-            />
-            {errors.address && (
-              <p className="text-red-500 text-sm text-right">{errors.address}</p>
-            )}
-          </div>
-
-          {/* Payment Method */}
-          <div className="space-y-2">
-            <Label htmlFor="paymentMethod" className="text-right block">
-              طريقة الدفع *
-            </Label>
-            <Select
-              value={formData.paymentMethod}
-              onValueChange={(value) => {
-                setFormData({ ...formData, paymentMethod: value });
-                if (errors.paymentMethod) setErrors({ ...errors, paymentMethod: '' });
-              }}
+    <section
+      id="registration"
+      className="bg-slate-100 px-4 py-12 dark:bg-slate-950"
+    >
+      <div className="mx-auto max-w-4xl">
+        <Card className="mx-auto max-w-3xl border-slate-200 shadow-lg dark:border-slate-800 dark:bg-slate-900">
+          <CardHeader className="space-y-2 text-right">
+            <CardTitle className="text-xl font-bold md:text-2xl">
+              سجل الآن واحجز مقعدك
+            </CardTitle>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              املأ الاستمارة في أقل من دقيقة وسنتصل بك في ظرف 24 ساعة لتأكيد
+              اشتراكك وإعطائك كل التفاصيل.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 text-right"
+              dir="rtl"
             >
-              <SelectTrigger className={`text-right ${errors.paymentMethod ? 'border-red-500' : ''}`} dir="rtl">
-                <SelectValue placeholder="إختر طريقة الدفع" />
-              </SelectTrigger>
-              <SelectContent dir="rtl">
-                <SelectItem value="نقدي عند التوصيل" className="text-right">
-                  نقدي عند التوصيل
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.paymentMethod && (
-              <p className="text-red-500 text-sm text-right">{errors.paymentMethod}</p>
-            )}
-          </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="firstName">الإسم *</Label>
+                  <Input
+                    id="firstName"
+                    placeholder="أدخل إسمك"
+                    value={formData.firstName}
+                    onChange={handleChange("firstName")}
+                    className={errors.firstName ? "border-red-500" : ""}
+                  />
+                  {errors.firstName && (
+                    <p className="text-xs text-red-500">
+                      {errors.firstName}
+                    </p>
+                  )}
+                </div>
 
-          {submitMessage && (
-            <div className={`p-4 rounded-lg text-center font-semibold ${
-              submitMessage.type === 'success' 
-                ? 'bg-green-100 text-green-800 border-2 border-green-500' 
-                : 'bg-red-100 text-red-800 border-2 border-red-500'
-            }`}>
-              {submitMessage.text}
-            </div>
-          )}
+                <div className="space-y-1.5">
+                  <Label htmlFor="lastName">اللقب *</Label>
+                  <Input
+                    id="lastName"
+                    placeholder="أدخل لقبك"
+                    value={formData.lastName}
+                    onChange={handleChange("lastName")}
+                    className={errors.lastName ? "border-red-500" : ""}
+                  />
+                  {errors.lastName && (
+                    <p className="text-xs text-red-500">
+                      {errors.lastName}
+                    </p>
+                  )}
+                </div>
+              </div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-lg py-6 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? 'جاري التسجيل...' : 'أكد تسجيلك الآن'}
-          </Button>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="phone">رقم الهاتف *</Label>
+                  <Input
+                    id="phone"
+                    placeholder="مثال: 12345678"
+                    maxLength={8}
+                    value={formData.phone}
+                    onChange={handleChange("phone")}
+                    className={errors.phone ? "border-red-500" : ""}
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-500">{errors.phone}</p>
+                  )}
+                </div>
 
-          <p className="text-center text-sm text-gray-600">
-            سنتصل بك في ظرف 24 ساعة لتأكيد إشتراكك
-          </p>
-        </form>
-      </CardContent>
-    </Card>
+                <div className="space-y-1.5">
+                  <Label htmlFor="parentPhone">رقم هاتف الولي *</Label>
+                  <Input
+                    id="parentPhone"
+                    placeholder="مثال: 12345678"
+                    maxLength={8}
+                    value={formData.parentPhone}
+                    onChange={handleChange("parentPhone")}
+                    className={errors.parentPhone ? "border-red-500" : ""}
+                  />
+                  {errors.parentPhone && (
+                    <p className="text-xs text-red-500">
+                      {errors.parentPhone}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label>الولاية *</Label>
+                  <Select
+                    value={formData.state}
+                    onValueChange={(value: string) => handleChange("state")(value)}
+                  >
+                    <SelectTrigger
+                      className={errors.state ? "border-red-500" : ""}
+                    >
+                      <SelectValue placeholder="اختر ولايتك" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tunisianStates.map((state) => (
+                        <SelectItem key={state} value={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.state && (
+                    <p className="text-xs text-red-500">{errors.state}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>الشعبة *</Label> 
+                  <Select
+                    value={formData.section}
+                    onValueChange={(value:string) => handleChange("section")(value)}
+                  >
+                    <SelectTrigger
+                      className={errors.section ? "border-red-500" : ""}
+                    >
+                      <SelectValue placeholder="اختر شعبة الدراسة" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="رياضيات">رياضيات</SelectItem>
+                      <SelectItem value="علوم تجريبية">
+                        علوم تجريبية
+                      </SelectItem>
+                      <SelectItem value="تقنية">تقنية</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.section && (
+                    <p className="text-xs text-red-500">{errors.section}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="address">العنوان الكامل *</Label>
+                <Input
+                  id="address"
+                  placeholder="أدخل عنوانك الكامل"
+                  value={formData.address}
+                  onChange={handleChange("address")}
+                  className={errors.address ? "border-red-500" : ""}
+                />
+                {errors.address && (
+                  <p className="text-xs text-red-500">{errors.address}</p>
+                )}
+              </div>
+
+              {/* طريقة الدفع - نفس ستايل الصورة */}
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">طريقة الدفع *</Label>
+
+                <div
+                  className={[
+                    "flex flex-col gap-3 rounded-xl border p-4 text-right",
+                    "bg-white shadow-sm dark:bg-slate-900",
+                    errors.paymentMethod
+                      ? "border-red-500"
+                      : "border-emerald-400",
+                  ].join(" ")}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">
+                        Paiement à la livraison
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        (espèce :{" "}
+                        <span className="line-through text-slate-400">
+                          247
+                        </span>{" "}
+                        <span className="font-bold text-emerald-600">
+                          147 DT
+                        </span>
+                        )
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          paymentMethod: "cash_on_delivery",
+                        }))
+                      }
+                      className="mt-1"
+                    >
+                      <span
+                        className={[
+                          "flex h-5 w-5 items-center justify-center rounded-full border",
+                          formData.paymentMethod === "cash_on_delivery"
+                            ? "border-emerald-500 bg-emerald-500"
+                            : "border-slate-400 bg-white dark:bg-slate-900",
+                        ].join(" ")}
+                      >
+                        <span
+                          className={[
+                            "h-2.5 w-2.5 rounded-full",
+                            formData.paymentMethod === "cash_on_delivery"
+                              ? "bg-white"
+                              : "bg-transparent",
+                          ].join(" ")}
+                        />
+                      </span>
+                    </button>
+                  </div>
+
+                  <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-200">
+                    يجيك للدار livreur يعطيك ورقة فيها معطيات حسابك الكل
+                    (mot de passe و l&apos;adresse) وحتى lien متاع
+                    الplatform الي باش تقرا فيها. إنت فقط تعمر المعطيات
+                    وتأكد الإشتراك.
+                  </p>
+                </div>
+
+                {errors.paymentMethod && (
+                  <p className="text-xs text-red-500">
+                    {errors.paymentMethod}
+                  </p>
+                )}
+              </div>
+
+              {submitMessage && (
+                <p
+                  className={`text-sm ${
+                    submitMessage.type === "success"
+                      ? "text-emerald-600"
+                      : "text-red-500"
+                  }`}
+                >
+                  {submitMessage.text}
+                </p>
+              )}
+
+              <div className="space-y-1">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-2 w-full bg-emerald-600 text-white text-base font-semibold hover:bg-emerald-500"
+                >
+                  {isSubmitting ? "جاري تسجيل طلبك..." : "تأكيد الإشتراك"}
+                </Button>
+                <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+                  سنتصل بك في ظرف 24 ساعة لتأكيد اشتراكك والرد على أسئلتك.
+                </p>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
   );
 }

@@ -16,6 +16,7 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
+      <FeaturesSection />
       {/* Registration Form - Right after Hero */}
       <section className="py-16 px-4 bg-gray-50" id="registration-form">
         <RegistrationForm />
@@ -23,7 +24,6 @@ export default function Home() {
 
      
       <ProblemsSection />
-      <FeaturesSection />
       <RegistrationSteps />
       <PricingSection />
       <TestimonialsSection />

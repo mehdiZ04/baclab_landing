@@ -1,22 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 
 export default function UrgencyBanner() {
-  const [availablePlaces, setAvailablePlaces] = useState(10);
+  const [availablePlaces] = useState(10);
 
   return (
-    <div className="bg-red-600 text-white py-2 px-4" dir="rtl">
-      <div className="max-w-6xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-        <AlertCircle className="flex-shrink-0 animate-pulse" size={18} />
-        <p className="text-sm md:text-base font-bold text-center">
-            باقي فقط <span className="text-yellow-300 text-lg mx-1">{availablePlaces}</span> مقعد متاح!
-        </p>
-        <span className="text-xs md:text-sm bg-white text-red-600 px-2 py-1 rounded-full font-semibold animate-pulse">
+    <section
+      dir="rtl"
+      className="w-full bg-red-600 text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
+    >
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+        {/* Main urgency text */}
+        <div className="flex flex-1 items-center justify-center gap-2 text-sm md:text-base">
+          <AlertCircle className="h-4 w-4 text-white/90" />
+          <span className="font-medium">
+            {" "}
+            <span className="mx-1 font-extrabold text-white">
+              {availablePlaces}
+            </span>
+            مقاعد متاحة! المقاعد محدودة.
+          </span>
+        </div>
+
+        {/* CTA pill */}
+        <a
+          href="#registration"
+          className="rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-red-600 shadow-sm transition hover:bg-red-50 md:text-sm"
+        >
           سارع بالتسجيل
-        </span>
+        </a>
       </div>
-    </div>
+    </section>
   );
 }
