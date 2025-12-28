@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://baclab.tn
+
+# Sitemaps
+Sitemap: https://baclab.tn/sitemap.xml
