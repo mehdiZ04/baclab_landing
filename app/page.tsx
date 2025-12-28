@@ -29,9 +29,9 @@ export default function Home() {
       <TestimonialsSection />
       <footer className="bg-gray-900 text-white py-8 px-4" dir="rtl">
         <div className="max-w-6xl mx-auto text-center">
-          <p className="text-lg font-semibold mb-2">BackLab - منصة تعليم الإعلامية</p>
+          <p className="text-lg font-semibold mb-2">BacLab - منصة تعليم الإعلامية</p>
           <p className="text-gray-400">معانا، مادة الإعلامية تولي ساهلة وتضمنلك التفوق فالباك</p>
-          <p className="text-gray-500 mt-4 text-sm">© 2025 BackLab. جميع الحقوق محفوظة</p>
+          <p className="text-gray-500 mt-4 text-sm">© 2025 BacLab. جميع الحقوق محفوظة</p>
           
         </div>
       </footer>
